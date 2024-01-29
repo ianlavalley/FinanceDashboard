@@ -92,17 +92,15 @@ def get_tax_info(n_clicks, salary, salary2, savings1, rsu_count, rsu_ticker, rsu
     print(salaries)
     if salary2:
         salaries.append(float(salary2))
-    taxes = GetTaxes(salaries[0], year=year)
+    taxes = GetTaxes(*salaries, year=year)
     taxes.df = taxes.df.round(2)
     # df = taxes.df.loc[[taxes.data.recommendation]]
     taxes.df["Filing Type"] = taxes.df.index
     # print("Transpose", taxes.df.T.loc[['Total Taxes', 'After-tax Income']])
-    fig_tax = line.render_bar(taxes.df, 
+    fig_tax = line.render_line(taxes.df, 
                               x_name = taxes.df.index,
                               y_name=["Total Taxes", "After-tax Income"],
                               title=f"File {taxes.data.recommendation} - Income: ${np.sum(salaries)} - Savings: ${taxes.data.savings} - Eff_Tax: {taxes.data.eff_taxes}%")
-    print(taxes.data.summary_table)
-
     return html.Div(children=[
         dcc.Graph(ids.GRAPH_TAX, figure=fig_tax),
         dh.table(id=ids.TABLE_SUMMARY, df=taxes.data.summary_table.round(2), style={'padding': '1rem'}),
